@@ -2,7 +2,7 @@
 ### Professional Software Solutions & Project Catalog
 
 <div align="center">
-  <!-- I-DRAG MO DITO YUNG VIDEO FILE MO PRE -->
+ https://github.com/user-attachments/assets/9df08f36-ebcb-4571-8724-a1c6eb4321f3
   <video src="" width="100%" autoplay muted loop></video>
   <br>
   <p align="center">
@@ -86,5 +86,5 @@ The system is built with role-based partitioning and data sanitization. *Note: F
 **Developed with ❤️ by the SINAG IT Team.**
 
 
-https://github.com/user-attachments/assets/9df08f36-ebcb-4571-8724-a1c6eb4321f3
+
 
