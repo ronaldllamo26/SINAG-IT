@@ -1,6 +1,17 @@
 # 🌟 SINAG IT Marketplace
 ### Professional Software Solutions & Project Catalog
 
+<div align="center">
+  <!-- I-DRAG MO DITO YUNG VIDEO FILE MO PRE -->
+  <video src="" width="100%" autoplay muted loop></video>
+  <br>
+  <p align="center">
+    <b>A High-Performance Software Marketplace for Modern Development Teams</b>
+  </p>
+</div>
+
+---
+
 **SINAG IT** is an enterprise-grade software marketplace designed for development agencies and freelance teams. It provides a high-fidelity showroom for project source codes, a robust role-based lead management system, and an automated administrative engine for rapid project deployment.
 
 ---
@@ -73,3 +84,7 @@ The system is built with role-based partitioning and data sanitization. *Note: F
 
 ---
 **Developed with ❤️ by the SINAG IT Team.**
+
+
+https://github.com/user-attachments/assets/9df08f36-ebcb-4571-8724-a1c6eb4321f3
+
