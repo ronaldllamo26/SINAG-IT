@@ -139,8 +139,12 @@ if (!$is_super) {
 
             <!-- Project Table -->
             <div class="clean-card shadow-sm border-0">
-                <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+                <div class="p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <h5 class="fw-bold mb-0">Manage Systems Catalog</h5>
+                    <div class="position-relative" style="max-width: 300px;">
+                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <input type="text" id="dashSearch" class="form-control form-control-sm ps-5 rounded-pill border-0 bg-light" placeholder="Search projects...">
+                    </div>
                 </div>
                 <div class="p-0 table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -150,23 +154,36 @@ if (!$is_super) {
                                 <th class="border-0 py-3 small text-muted text-uppercase fw-bold">Tech Stack</th>
                                 <th class="border-0 py-3 small text-muted text-uppercase fw-bold">Price</th>
                                 <th class="border-0 py-3 small text-muted text-uppercase fw-bold">Developer</th>
+                                <th class="border-0 py-3 small text-muted text-uppercase fw-bold text-center">Views</th>
                                 <th class="border-0 py-3 small text-muted text-uppercase fw-bold">Status</th>
                                 <th class="pe-4 border-0 py-3 small text-muted text-uppercase fw-bold text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php while($row = mysqli_fetch_assoc($result)): ?>
-                            <tr>
+                             <tr class="project-row">
                                 <td class="ps-4 py-4">
-                                    <div class="fw-bold"><?= $row['title'] ?></div>
+                                    <div class="fw-bold project-title"><?= $row['title'] ?></div>
                                     <div class="small text-muted">ID: #<?= $row['id'] ?></div>
                                 </td>
-                                <td><span class="badge bg-light text-primary border"><?= $row['tech_stack'] ?></span></td>
+                                <td><span class="badge bg-light text-primary border project-tech"><?= $row['tech_stack'] ?></span></td>
                                 <td>
                                     <div class="fw-bold"><?= $row['is_negotiable'] ? 'Negotiable' : '₱'.number_format($row['price'], 2) ?></div>
                                 </td>
                                 <td><div class="small fw-medium"><?= $row['dev_name'] ?></div></td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Available</span></td>
+                                <td class="text-center">
+                                    <div class="small fw-bold text-muted"><i class="fas fa-eye me-1"></i> <?= number_format($row['views']) ?></div>
+                                </td>
+                                <td>
+                                    <?php 
+                                    $status_class = 'bg-success';
+                                    if ($row['status'] == 'Sold') $status_class = 'bg-danger';
+                                    if ($row['status'] == 'Hidden') $status_class = 'bg-secondary';
+                                    ?>
+                                    <span class="badge <?= $status_class ?> bg-opacity-10 text-<?= str_replace('bg-', '', $status_class) ?> rounded-pill px-3 py-2 small fw-bold">
+                                        <i class="fas fa-circle me-1" style="font-size: 0.5rem; vertical-align: middle;"></i> <?= strtoupper($row['status']) ?>
+                                    </span>
+                                </td>
                                 <td class="pe-4 text-end">
                                     <a href="edit-project.php?id=<?= $row['id'] ?>" class="btn btn-light btn-sm rounded-circle me-1" title="Edit"><i class="fas fa-edit text-primary"></i></a>
                                     <button onclick="deleteProject(<?= $row['id'] ?>)" class="btn btn-light btn-sm rounded-circle" title="Delete"><i class="fas fa-trash text-danger"></i></button>
@@ -217,14 +234,23 @@ new Chart(ctxCategory, {
     options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
 });
 
+// Dashboard Search
+$("#dashSearch").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $(".project-row").filter(function() {
+        $(this).toggle($(this).find('.project-title').text().toLowerCase().indexOf(value) > -1 || 
+                     $(this).find('.project-tech').text().toLowerCase().indexOf(value) > -1);
+    });
+});
+
 function deleteProject(id) {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#6366f1',
-        cancelButtonColor: '#94a3b8',
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
         confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {

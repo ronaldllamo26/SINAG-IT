@@ -57,6 +57,7 @@ $result = mysqli_query($conn, $query);
                                 <th class="ps-4 py-3">Client</th>
                                 <th class="py-3">Project</th>
                                 <th class="py-3">Message</th>
+                                <th class="py-3">Notes</th>
                                 <th class="py-3">Status</th>
                                 <th class="pe-4 py-3 text-end">Action</th>
                             </tr>
@@ -84,6 +85,15 @@ $result = mysqli_query($conn, $query);
                                         <p class="small mb-0 text-truncate" title="<?= $row['message'] ?>"><?= $row['message'] ?></p>
                                     </td>
                                     <td>
+                                        <?php if($row['admin_notes']): ?>
+                                            <div class="small text-muted text-truncate" style="max-width: 150px;" title="<?= $row['admin_notes'] ?>">
+                                                <i class="fas fa-sticky-note text-warning me-1"></i> <?= $row['admin_notes'] ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="text-muted small italic">- No notes -</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
                                         <span class="badge <?= $badge_class ?> rounded-pill" style="font-size: 0.6rem;"><?= strtoupper($status) ?></span>
                                     </td>
                                     <td class="pe-4 text-end">
@@ -96,13 +106,15 @@ $result = mysqli_query($conn, $query);
                                                 <button onclick="updateStatus(<?= $row['id'] ?>, 'Closed')" class="btn btn-white btn-sm border-end px-3" title="Mark as Closed/Sold"><i class="fas fa-check-double text-warning"></i></button>
                                             <?php endif; ?>
                                             
+                                            <button onclick="editNotes(<?= $row['id'] ?>, '<?= addslashes($row['admin_notes'] ?? '') ?>')" class="btn btn-white btn-sm border-end px-3" title="Edit Notes"><i class="fas fa-edit text-muted"></i></button>
+                                            
                                             <a href="mailto:<?= $row['email'] ?>?subject=RE: <?= $row['subject'] ?>" class="btn btn-white btn-sm px-3" title="Send Email"><i class="fas fa-envelope text-primary"></i></a>
                                         </div>
                                     </td>
                                 </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
-                                <tr><td colspan="5" class="text-center py-5 text-muted">No leads found yet.</td></tr>
+                                <tr><td colspan="6" class="text-center py-5 text-muted">No leads found yet.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -121,6 +133,26 @@ function updateStatus(id, status) {
             location.reload();
         }
     }, 'json');
+}
+
+function editNotes(id, currentNotes) {
+    Swal.fire({
+        title: 'Inquiry Notes',
+        input: 'textarea',
+        inputLabel: 'Internal notes for this lead',
+        inputValue: currentNotes,
+        inputPlaceholder: 'Add details about the transaction...',
+        showCancelButton: true,
+        confirmButtonColor: '#6366f1',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.post('actions/save_inquiry_notes.php', {id: id, notes: result.value}, function(res) {
+                if(res.status === 'success') {
+                    Swal.fire('Saved!', '', 'success').then(() => location.reload());
+                }
+            }, 'json');
+        }
+    });
 }
 </script>
 <style>

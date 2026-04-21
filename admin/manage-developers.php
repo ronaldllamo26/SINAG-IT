@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'super_admin') {
 }
 
 // Fetch all developers
-$result = mysqli_query($conn, "SELECT id, full_name, username, created_at FROM users WHERE role = 'developer' ORDER BY created_at DESC");
+$result = mysqli_query($conn, "SELECT id, full_name, username, email, created_at FROM users WHERE role = 'developer' ORDER BY created_at DESC");
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +49,7 @@ $result = mysqli_query($conn, "SELECT id, full_name, username, created_at FROM u
                             <tr>
                                 <th class="ps-4">Full Name</th>
                                 <th>Username</th>
+                                <th>Email/Gmail</th>
                                 <th>Joined Date</th>
                                 <th class="text-end pe-4">Actions</th>
                             </tr>
@@ -58,6 +59,7 @@ $result = mysqli_query($conn, "SELECT id, full_name, username, created_at FROM u
                             <tr>
                                 <td class="ps-4 py-3 fw-bold"><?= $row['full_name'] ?></td>
                                 <td class="text-primary fw-medium"><?= $row['username'] ?></td>
+                                <td class="small"><?= $row['email'] ?: '<span class="text-muted italic">Not set</span>' ?></td>
                                 <td class="small text-muted"><?= date('M d, Y', strtotime($row['created_at'])) ?></td>
                                 <td class="text-end pe-4">
                                     <button onclick="resetPassword(<?= $row['id'] ?>, '<?= $row['full_name'] ?>')" class="btn-action btn-reset me-1" title="Reset Password">
@@ -92,6 +94,10 @@ $result = mysqli_query($conn, "SELECT id, full_name, username, created_at FROM u
                         <label class="small fw-bold mb-2">Username</label>
                         <input type="text" name="username" class="form-control bg-light border-0 py-3" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold mb-2">Gmail Address (Direct Contact)</label>
+                        <input type="email" name="email" class="form-control bg-light border-0 py-3" placeholder="e.g. vinzel@gmail.com" required>
+                    </div>
                     <div class="mb-4">
                         <label class="small fw-bold mb-2">Initial Password</label>
                         <input type="password" name="password" class="form-control bg-light border-0 py-3" required>
@@ -110,7 +116,7 @@ $result = mysqli_query($conn, "SELECT id, full_name, username, created_at FROM u
     // Add Developer
     $('#addDevForm').on('submit', function(e) {
         e.preventDefault();
-        $.post('actions/register_developer.php', $(this).serialize(), function(res) {
+        $.post('actions/add_developer.php', $(this).serialize(), function(res) {
             if(res.status === 'success') {
                 Swal.fire('Success!', res.message, 'success').then(() => location.reload());
             } else {

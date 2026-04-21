@@ -2,3 +2,34 @@ php_value upload_max_filesize 64M
 php_value post_max_size 64M
 php_value max_execution_time 300
 php_value max_input_time 300
+
+# Security: Prevent Directory Listing
+Options -Indexes
+
+# Security: Basic Headers
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Security: Force HTTPS (Excluding Localhost)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_HOST} !^localhost$ [NC]
+    RewriteCond %{HTTP_HOST} !^127\.0\.0\.1$
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Security: Protect sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<Files config.php>
+    Order allow,deny
+    Deny from all
+</Files>

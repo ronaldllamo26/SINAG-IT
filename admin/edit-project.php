@@ -74,12 +74,16 @@ if (!$p || ($p['user_id'] != $user_id && $role != 'super_admin')) {
                                         <label class="small fw-bold">Project Category</label>
                                         <input list="categoryOptions" name="category" class="form-control bg-light border-0 py-3" value="<?= $p['category'] ?>" required>
                                         <datalist id="categoryOptions">
+                                            <option value="LGU & Government Systems">
+                                            <option value="Logistics & Supply Chain">
+                                            <option value="Finance & Accounting">
                                             <option value="Inventory Systems">
                                             <option value="School Management">
                                             <option value="E-Commerce / Retail">
                                             <option value="Custom Web Apps">
                                             <option value="Mobile Applications">
-                                            <option value="Desktop Software">
+                                            <option value="Hospitality & Booking">
+                                            <option value="Health & Medical Systems">
                                         </datalist>
                                     </div>
                                     <div class="col-md-6">
@@ -128,19 +132,23 @@ if (!$p || ($p['user_id'] != $user_id && $role != 'super_admin')) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Quick Tag Selection
+    // Quick Tag Selection (Toggleable)
     $('.tag-btn').on('click', function() {
         let tag = $(this).text();
         let currentVal = $('#techStackInput').val();
-        if(currentVal === '') {
-            $('#techStackInput').val(tag);
+        let tags = currentVal.split(',').map(t => t.trim()).filter(t => t !== "");
+
+        if (tags.includes(tag)) {
+            // Remove tag
+            tags = tags.filter(t => t !== tag);
+            $(this).addClass('bg-light').removeClass('bg-primary text-white');
         } else {
-            // Check if tag already exists to avoid duplicates
-            if(!currentVal.includes(tag)) {
-                $('#techStackInput').val(currentVal + ', ' + tag);
-            }
+            // Add tag
+            tags.push(tag);
+            $(this).removeClass('bg-light').addClass('bg-primary text-white');
         }
-        $(this).removeClass('bg-light').addClass('bg-primary text-white');
+        
+        $('#techStackInput').val(tags.join(', '));
     });
 
     $('#isNegotiable').on('change', function() {

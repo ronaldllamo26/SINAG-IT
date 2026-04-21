@@ -3,13 +3,13 @@
 require_once 'includes/config.php';
 
 // Fetch projects
-$query = "SELECT p.*, u.full_name as dev_name FROM projects p 
+$query = "SELECT p.*, u.full_name as dev_name, u.email as dev_email FROM projects p 
           JOIN users u ON p.user_id = u.id 
           WHERE p.status = 'Available' 
           ORDER BY p.created_at DESC";
 $result = mysqli_query($conn, $query);
 
-$admin_email = "campusthrift77@gmail.com";
+$admin_email = SITE_EMAIL;
 ?>
 
 <!DOCTYPE html>
@@ -72,7 +72,7 @@ $admin_email = "campusthrift77@gmail.com";
                 <div class="col-lg-6">
                     <h6 class="text-primary fw-bold text-uppercase small mb-3">Academic & Business Solutions</h6>
                     <h1 class="display-3 fw-bold mb-4" style="color: #0f172a;">Smart Systems for Students & Businesses</h1>
-                    <p class="lead text-muted mb-5 pe-lg-5">Helping students excel in their academic projects and businesses automate their daily operations with high-quality, ready-to-deploy software.</p>
+                    <p class="lead text-muted mb-5 pe-lg-5">Get high-quality, ready-to-deploy software for your academic projects and business operations, or request a <b>custom solution</b> built from the ground up.</p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="#catalog" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-lg">Browse Systems</a>
                         <a href="#contact" class="btn btn-light btn-lg rounded-pill px-5 fw-bold border bg-white">Thesis Consultation</a>
@@ -89,7 +89,7 @@ $admin_email = "campusthrift77@gmail.com";
     <section class="py-5 bg-white">
         <div class="container py-5">
             <div class="row g-4 text-center">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="feature-card h-100 p-5">
                         <div class="icon-box mb-4 mx-auto">
                             <i class="fas fa-graduation-cap fa-2x text-primary"></i>
@@ -98,13 +98,22 @@ $admin_email = "campusthrift77@gmail.com";
                         <p class="text-muted">Get a solid foundation for your capstone or thesis projects with our clean and well-documented source codes.</p>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="feature-card h-100 p-5">
                         <div class="icon-box mb-4 mx-auto">
                             <i class="fas fa-briefcase fa-2x text-primary"></i>
                         </div>
                         <h3 class="fw-bold mb-3">For Businesses</h3>
                         <p class="text-muted">Professional systems designed to manage inventory, sales, and operations with ease and reliability.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100 p-5">
+                        <div class="icon-box mb-4 mx-auto">
+                            <i class="fas fa-code fa-2x text-primary"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3">Custom Build</h3>
+                        <p class="text-muted">Need something unique? We also build custom software from the ground up, tailored to your exact specifications.</p>
                     </div>
                 </div>
             </div>
@@ -154,10 +163,27 @@ $admin_email = "campusthrift77@gmail.com";
                 <!-- Category Tabs -->
                 <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
                     <button class="btn btn-primary rounded-pill px-4 cat-filter active" data-cat="all">All Systems</button>
-                    <button class="btn btn-outline-primary rounded-pill px-4 cat-filter" data-cat="Inventory">Inventory</button>
-                    <button class="btn btn-outline-primary rounded-pill px-4 cat-filter" data-cat="School">School</button>
-                    <button class="btn btn-outline-primary rounded-pill px-4 cat-filter" data-cat="E-Commerce">E-Commerce</button>
-                    <button class="btn btn-outline-primary rounded-pill px-4 cat-filter" data-cat="Web App">Web Apps</button>
+                    <button class="btn btn-outline-primary rounded-pill px-4 cat-filter" data-cat="Inventory Systems">Inventory</button>
+                    <button class="btn btn-outline-primary rounded-pill px-4 cat-filter" data-cat="School Management">School</button>
+                    <button class="btn btn-outline-primary rounded-pill px-4 cat-filter" data-cat="E-Commerce / Retail">E-Commerce</button>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="moreCats" data-bs-toggle="dropdown" aria-expanded="false">
+                            Others
+                        </button>
+                        <ul class="dropdown-menu border-0 shadow-lg p-2 mt-2" style="border-radius: 20px;">
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="LGU & Government Systems">LGU & Government</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Logistics & Supply Chain">Logistics & Supply</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Finance & Accounting">Finance & Accounting</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Custom Web Apps">Custom Web Apps</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Mobile Applications">Mobile Apps</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Hospitality & Booking">Hospitality & Booking</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Health & Medical Systems">Health & Medical</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="E-Commerce & Retail">E-Commerce & Retail</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Education & LMS">Education & LMS</a></li>
+                            <li><a class="dropdown-item rounded-pill cat-filter" href="javascript:void(0)" data-cat="Security & Monitoring">Security & Monitoring</a></li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-center">
@@ -170,13 +196,13 @@ $admin_email = "campusthrift77@gmail.com";
 
             <div class="row g-4" id="projectContainer">
                 <?php 
-                $result = mysqli_query($conn, "SELECT p.*, u.full_name as dev_name FROM projects p JOIN users u ON p.user_id = u.id WHERE p.status != 'Hidden' ORDER BY p.created_at DESC");
+                $result = mysqli_query($conn, "SELECT p.*, u.full_name as dev_name, u.email FROM projects p JOIN users u ON p.user_id = u.id WHERE p.status != 'Hidden' ORDER BY p.created_at DESC");
                 while($row = mysqli_fetch_assoc($result)): 
                     $p_data = htmlspecialchars(json_encode([
                         'id' => $row['id'], 'title' => $row['title'], 'desc' => $row['description'],
                         'tech' => $row['tech_stack'], 'category' => $row['category'], 'price' => $row['is_negotiable'] ? 'Negotiable' : '₱'.number_format($row['price'], 2),
                         'is_neg' => $row['is_negotiable'], 'yt' => $row['youtube_id'], 'video' => $row['video_file'],
-                        'dev' => $row['dev_name']
+                        'dev' => $row['dev_name'], 'dev_email' => $row['email'], 'status' => $row['status']
                     ]));
                 ?>
                     <div class="col-md-4 project-item" data-category="<?= $row['category'] ?>" data-title="<?= strtolower($row['title']) ?>" data-tech="<?= strtolower($row['tech_stack']) ?>">
@@ -189,14 +215,15 @@ $admin_email = "campusthrift77@gmail.com";
                                 </span>
                             <?php endif; ?>
 
-                            <!-- Sold Badge -->
+                            <!-- Sold Overlay & Badge -->
                             <?php if(isset($row['status']) && $row['status'] == 'Sold'): ?>
+                                <div class="sold-overlay"></div>
                                 <div class="position-absolute top-50 start-50 translate-middle z-3 w-100 text-center">
-                                    <span class="badge bg-dark px-4 py-2 shadow-lg" style="opacity: 0.9; font-size: 1rem; border: 2px solid white;">SOLD</span>
+                                    <span class="sold-badge">SOLD OUT</span>
                                 </div>
                             <?php endif; ?>
 
-                            <div class="ratio ratio-16x9 bg-dark <?= ($row['status'] == 'Sold') ? 'opacity-50' : '' ?>">
+                            <div class="ratio ratio-16x9 bg-dark">
                                 <?php if($row['video_file']): ?>
                                     <video class="w-100 h-100 object-fit-cover" muted onmouseover="this.play()" onmouseout="this.pause();this.currentTime=0;">
                                         <source src="assets/videos/<?= $row['video_file'] ?>" type="video/mp4">
@@ -226,7 +253,7 @@ $admin_email = "campusthrift77@gmail.com";
     </section>
 
     <!-- Specs Modal -->
-    <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="projectModal" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 overflow-hidden shadow-lg" style="border-radius: 40px;">
                 <div class="ratio ratio-16x9 bg-dark" id="modalVideoContainer"></div>
@@ -300,6 +327,7 @@ $admin_email = "campusthrift77@gmail.com";
             
             <div class="contact-card mx-auto p-4 p-md-5 bg-white shadow-lg border-0" style="max-width: 800px; border-radius: 40px;">
                 <form id="contactForm">
+                    <input type="hidden" name="hp_field" style="display:none !important" tabindex="-1" autocomplete="off">
                     <div class="row g-4 text-start">
                         <div class="col-md-6">
                             <label class="small fw-bold mb-2">Subject</label>
@@ -396,14 +424,25 @@ $admin_email = "campusthrift77@gmail.com";
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/security.js"></script>
     <script>
         $(document).ready(function() {
             // Category Filter
             $(".cat-filter").on("click", function() {
-                $(".cat-filter").removeClass("active btn-primary").addClass("btn-outline-primary");
-                $(this).addClass("active btn-primary").removeClass("btn-outline-primary");
+                // Reset all filters styling
+                $(".cat-filter").removeClass("active btn-primary bg-primary text-white").addClass("btn-outline-primary");
+                $("#moreCats").removeClass("btn-primary text-white").addClass("btn-outline-primary");
                 
-                var cat = $(this).data("cat");
+                const isDropdownItem = $(this).hasClass('dropdown-item');
+                const cat = $(this).data("cat");
+                
+                if (isDropdownItem) {
+                    $(this).addClass("bg-primary text-white");
+                    $("#moreCats").addClass("btn-primary text-white").removeClass("btn-outline-primary");
+                } else {
+                    $(this).addClass("active btn-primary").removeClass("btn-outline-primary");
+                }
+                
                 if(cat === "all") {
                     $(".project-item").fadeIn();
                 } else {
@@ -413,6 +452,7 @@ $admin_email = "campusthrift77@gmail.com";
                 }
             });
 
+            let isInquiring = false;
             // Search
             $("#searchInput").on("keyup", function() {
                 var v = $(this).val().toLowerCase();
@@ -422,6 +462,10 @@ $admin_email = "campusthrift77@gmail.com";
             // Modal Logic
             $(".btn-quickview").on("click", function() {
                 const p = $(this).data("project");
+                
+                // Track view
+                $.post('actions/track_view.php', {id: p.id});
+
                 $("#modalTitle").text(p.title); 
                 $("#modalDesc").text(p.desc); 
                 $("#modalPrice").text(p.price);
@@ -430,7 +474,15 @@ $admin_email = "campusthrift77@gmail.com";
                 $("#negNote").text(p.is_neg ? "Negotiable based on requirements." : "Fixed price.");
                 
                 // Set data attributes for inquiry
-                $("#modalInquire").attr("data-id", p.id).attr("data-title", p.title);
+                $("#modalInquire").attr("data-id", p.id).attr("data-title", p.title).attr("data-email", p.dev_email);
+
+                if (p.status === 'Sold') {
+                    $("#modalInquire").addClass("disabled btn-secondary").removeClass("btn-primary").text("Sold Out");
+                    $("#modalPrice").addClass("text-muted text-decoration-line-through").removeClass("text-primary");
+                } else {
+                    $("#modalInquire").removeClass("disabled btn-secondary").addClass("btn-primary").text("Inquire via Email");
+                    $("#modalPrice").removeClass("text-muted text-decoration-line-through").addClass("text-primary");
+                }
 
                 let vHtml = p.video ? `<video class="w-100 h-100" controls autoplay muted><source src="assets/videos/${p.video}" type="video/mp4"></video>` : (p.yt ? `<iframe src="https://www.youtube.com/embed/${p.yt}?autoplay=1" allowfullscreen></iframe>` : "");
                 $("#modalVideoContainer").html(vHtml);
@@ -465,22 +517,55 @@ $admin_email = "campusthrift77@gmail.com";
                 const id = $(this).data('id');
                 
                 Swal.fire({
-                    title: 'Inquire about ' + title,
+                    title: '<h4 class="fw-bold mb-0">Inquire about ' + title + '</h4>',
                     html: `
-                        <input id="swal-name" class="swal2-input" placeholder="Your Name">
-                        <input id="swal-email" class="swal2-input" placeholder="Your Email">
-                        <textarea id="swal-msg" class="swal2-textarea" placeholder="Your Message"></textarea>
+                        <div class="text-start p-2">
+                            <input type="hidden" id="swal-hp" style="display:none !important">
+                            <div class="mb-3">
+                                <label class="small fw-bold mb-1 text-muted">Full Name</label>
+                                <input id="swal-name" class="form-control bg-light border-0 py-3 rounded-3 shadow-none" placeholder="Enter your name">
+                            </div>
+                            <div class="mb-3">
+                                <label class="small fw-bold mb-1 text-muted">Email Address</label>
+                                <input id="swal-email" type="email" class="form-control bg-light border-0 py-3 rounded-3 shadow-none" placeholder="your@email.com">
+                            </div>
+                            <div class="mb-1">
+                                <label class="small fw-bold mb-1 text-muted">Message</label>
+                                <textarea id="swal-msg" class="form-control bg-light border-0 py-3 rounded-3 shadow-none" rows="4" placeholder="How can we help you?"></textarea>
+                            </div>
+                        </div>
                     `,
-                    focusConfirm: false,
                     showCancelButton: true,
                     confirmButtonText: 'Send Inquiry',
                     confirmButtonColor: '#6366f1',
+                    cancelButtonText: 'Cancel',
+                    cancelButtonColor: '#94a3b8',
+                    padding: '2rem',
+                    buttonsStyling: true,
+                    customClass: {
+                        popup: 'rounded-4 border-0 shadow-lg',
+                        confirmButton: 'btn btn-primary rounded-pill px-5 py-2 fw-bold',
+                        cancelButton: 'btn btn-light rounded-pill px-4 py-2 fw-bold'
+                    },
+                    didOpen: () => {
+                        // Focus the name input
+                        document.getElementById('swal-name').focus();
+                    },
                     preConfirm: () => {
-                        return {
-                            name: document.getElementById('swal-name').value,
-                            email: document.getElementById('swal-email').value,
-                            message: document.getElementById('swal-msg').value
+                        const name = document.getElementById('swal-name').value;
+                        const email = document.getElementById('swal-email').value;
+                        const message = document.getElementById('swal-msg').value;
+                        const hp = document.getElementById('swal-hp').value;
+
+                        if (!name || !email || !message) {
+                            Swal.showValidationMessage('Please fill in all fields');
+                            return false;
                         }
+                        return { name, email, message, hp_field: hp };
+                    },
+                    willClose: () => {
+                        // Re-open the project modal after SweetAlert closes
+                        $("#projectModal").modal("show");
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -489,15 +574,37 @@ $admin_email = "campusthrift77@gmail.com";
                         data.project_id = id;
                         
                         $.post('actions/save_inquiry.php', data, function(res) {
-                            Swal.fire('Sent!', 'Your inquiry has been recorded.', 'success').then(() => {
-                                window.location.href = `mailto:<?= $admin_email ?>?subject=Inquiry: ${title}&body=${encodeURIComponent(data.message)}`;
-                            });
-                        });
+                            if (res.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sent!',
+                                    text: 'Your inquiry has been recorded.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    let targetEmail = $(this).data('email') || '<?= $admin_email ?>';
+                                    window.location.href = `mailto:${targetEmail}?subject=Inquiry: ${title}&body=${encodeURIComponent(data.message)}`;
+                                });
+                            } else {
+                                Swal.fire('Error', res.message, 'error');
+                            }
+                        }.bind(this), 'json');
                     }
                 });
             });
 
-            $('#projectModal').on('hidden.bs.modal', function () { $("#modalVideoContainer").html(""); });
+            // Re-open modal helper for better UX
+            $('#modalInquire').on('click', function() {
+                isInquiring = true;
+                $("#projectModal").modal("hide");
+            });
+
+            $('#projectModal').on('hidden.bs.modal', function () { 
+                if (!isInquiring) {
+                    $("#modalVideoContainer").html(""); 
+                }
+                isInquiring = false; 
+            });
         });
     </script>
 </body>

@@ -10,9 +10,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'super_admin') {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $full_name = sanitize($_POST['full_name']);
     $username = sanitize($_POST['username']);
+    $email = sanitize($_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users (full_name, username, password, role) VALUES ('$full_name', '$username', '$password', 'developer')";
+    $sql = "INSERT INTO users (full_name, username, email, password, role) VALUES ('$full_name', '$username', '$email', '$password', 'developer')";
 
     if (mysqli_query($conn, $sql)) {
         echo json_encode(['status' => 'success']);

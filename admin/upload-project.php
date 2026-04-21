@@ -62,12 +62,16 @@ if (!isset($_SESSION['user_id'])) {
                                         <label class="small fw-bold">Project Category</label>
                                         <input list="categoryOptions" name="category" class="form-control bg-light border-0 py-3" placeholder="Select or type custom category..." required>
                                         <datalist id="categoryOptions">
+                                            <option value="LGU & Government Systems">
+                                            <option value="Logistics & Supply Chain">
+                                            <option value="Finance & Accounting">
                                             <option value="Inventory Systems">
                                             <option value="School Management">
                                             <option value="E-Commerce / Retail">
                                             <option value="Custom Web Apps">
                                             <option value="Mobile Applications">
-                                            <option value="Desktop Software">
+                                            <option value="Hospitality & Booking">
+                                            <option value="Health & Medical Systems">
                                         </datalist>
                                     </div>
                                     <div class="col-md-6">
@@ -82,23 +86,31 @@ if (!isset($_SESSION['user_id'])) {
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold">Demo Video (MP4)</label>
-                                        <input type="file" name="video_file" class="form-control bg-light border-0 py-3" accept="video/mp4">
-                                        <div class="small text-muted mt-1">Maximum 40MB. For larger files, use YouTube ID.</div>
+                                        <label class="form-label small fw-bold">Demo Video (MP4/MKV)</label>
+                                        <input type="file" name="video_file" class="form-control bg-light border-0 py-3" accept="video/mp4,video/x-matroska,video/mkv">
+                                        <div class="small text-muted mt-1">Maximum 40MB. Supports MP4, MKV. For larger files, use YouTube ID.</div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label small fw-bold">YouTube ID (Optional)</label>
                                         <input type="text" name="youtube_id" class="form-control bg-light border-0 py-3" placeholder="e.g. dQw4w9WgXcQ">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-bold">Promotional Badge</label>
-                                        <select name="badge" class="form-select bg-light border-0 py-3">
-                                            <option value="">None</option>
-                                            <option value="NEW">NEW</option>
-                                            <option value="HOT">HOT</option>
-                                            <option value="TOP SELLER">TOP SELLER</option>
-                                        </select>
-                                    </div>
+                                         <label class="form-label small fw-bold">Promotional Badge</label>
+                                         <select name="badge" class="form-select bg-light border-0 py-3">
+                                             <option value="">None</option>
+                                             <option value="NEW">NEW</option>
+                                             <option value="HOT">HOT</option>
+                                             <option value="TOP SELLER">TOP SELLER</option>
+                                         </select>
+                                     </div>
+                                     <div class="col-md-6">
+                                         <label class="form-label small fw-bold">Initial Availability</label>
+                                         <select name="status" class="form-select bg-light border-0 py-3">
+                                             <option value="Available">Available (Show in Catalog)</option>
+                                             <option value="Hidden">Hidden (Save as Draft)</option>
+                                             <option value="Sold">Sold (Mark as Sold Out)</option>
+                                         </select>
+                                     </div>
                                     <div class="col-12 pt-4">
                                         <div class="progress d-none mb-3" style="height: 10px; border-radius: 5px;">
                                             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
@@ -150,18 +162,23 @@ $(document).ready(function() {
         $(this).fadeOut();
     });
 
-    // Quick Tag Selection
+    // Quick Tag Selection (Toggleable)
     $('.tag-btn').on('click', function() {
         let tag = $(this).text();
         let currentVal = $('#techStackInput').val();
-        if(currentVal === '') {
-            $('#techStackInput').val(tag);
+        let tags = currentVal.split(',').map(t => t.trim()).filter(t => t !== "");
+
+        if (tags.includes(tag)) {
+            // Remove tag
+            tags = tags.filter(t => t !== tag);
+            $(this).addClass('bg-light').removeClass('bg-primary text-white');
         } else {
-            if(!currentVal.includes(tag)) {
-                $('#techStackInput').val(currentVal + ', ' + tag);
-            }
+            // Add tag
+            tags.push(tag);
+            $(this).removeClass('bg-light').addClass('bg-primary text-white');
         }
-        $(this).removeClass('bg-light').addClass('bg-primary text-white');
+        
+        $('#techStackInput').val(tags.join(', '));
     });
 
     $('#isNegotiable').on('change', function() {

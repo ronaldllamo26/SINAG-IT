@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $price = isset($_POST['price']) ? sanitize($_POST['price']) : 0;
     $is_negotiable = isset($_POST['is_negotiable']) ? 1 : 0;
     $youtube_id = isset($_POST['youtube_id']) ? sanitize($_POST['youtube_id']) : '';
+    $status = isset($_POST['status']) ? sanitize($_POST['status']) : 'Available';
     $user_id = $_SESSION['user_id'];
 
     if (empty($title)) {
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $sql = "INSERT INTO projects (user_id, title, description, tech_stack, category, badge, price, is_negotiable, youtube_id, video_file, status) 
-            VALUES ('$user_id', '$title', '$description', '$tech_stack', '$category', '$badge', '$price', '$is_negotiable', '$youtube_id', '$video_file_name', 'Available')";
+            VALUES ('$user_id', '$title', '$description', '$tech_stack', '$category', '$badge', '$price', '$is_negotiable', '$youtube_id', '$video_file_name', '$status')";
 
     if (mysqli_query($conn, $sql)) {
         echo json_encode(['status' => 'success', 'message' => 'Project published!']);

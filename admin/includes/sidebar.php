@@ -41,6 +41,11 @@ $new_count = $count_data['total'];
         <?php endif; ?>
     </a>
     
+    <div class="mt-4 mb-2 small text-muted fw-bold ps-3 text-uppercase ls-wide">Account</div>
+    <a href="profile.php" class="nav-link-custom <?= ($current_page == 'profile.php') ? 'active' : '' ?>">
+        <i class="fas fa-user-cog"></i> Profile Settings
+    </a>
+    
     <?php if($is_super): ?>
     <div class="mt-4 mb-2 small text-muted fw-bold ps-3 text-uppercase ls-wide">Management</div>
     <a href="manage-developers.php" class="nav-link-custom <?= ($current_page == 'manage-developers.php') ? 'active' : '' ?>">
@@ -60,3 +65,5 @@ $new_count = $count_data['total'];
     .nav-link-custom:hover, .nav-link-custom.active { background: #6366f1; color: white; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2); }
     .nav-link-custom i { margin-right: 12px; width: 20px; text-align: center; }
 </style>
+
+<script src="../assets/js/security.js"></script>

@@ -5,20 +5,20 @@ require_once 'includes/config.php';
 $id = isset($_GET['id']) ? sanitize($_GET['id']) : header("Location: index.php");
 
 // Fetch developer info
-$dev_q = mysqli_query($conn, "SELECT full_name FROM users WHERE id = '$id'");
+$dev_q = mysqli_query($conn, "SELECT full_name, email FROM users WHERE id = '$id'");
 $dev = mysqli_fetch_assoc($dev_q);
 
 if (!$dev) { header("Location: index.php"); exit; }
 
 // Fetch projects by this dev
-$query = "SELECT p.*, u.full_name as dev_name FROM projects p 
+$query = "SELECT p.*, u.full_name as dev_name, u.email FROM projects p 
           JOIN users u ON p.user_id = u.id 
           WHERE p.user_id = '$id' AND p.status != 'Hidden' 
           ORDER BY p.created_at DESC";
 $result = mysqli_query($conn, $query);
 $count = mysqli_num_rows($result);
 
-$admin_email = "campusthrift77@gmail.com";
+$admin_email = SITE_EMAIL;
 ?>
 
 <!DOCTYPE html>
@@ -71,19 +71,20 @@ $admin_email = "campusthrift77@gmail.com";
                         'id' => $row['id'], 'title' => $row['title'], 'desc' => $row['description'],
                         'tech' => $row['tech_stack'], 'category' => $row['category'], 'price' => $row['is_negotiable'] ? 'Negotiable' : '₱'.number_format($row['price'], 2),
                         'is_neg' => $row['is_negotiable'], 'yt' => $row['youtube_id'], 'video' => $row['video_file'],
-                        'dev' => $row['dev_name']
+                        'dev' => $row['dev_name'], 'dev_email' => $row['email'], 'status' => $row['status']
                     ]));
                 ?>
                 <div class="col-md-4">
                     <div class="project-card h-100 bg-white position-relative">
-                        <!-- Sold Badge -->
+                        <!-- Sold Overlay & Badge -->
                         <?php if($row['status'] == 'Sold'): ?>
+                            <div class="sold-overlay"></div>
                             <div class="position-absolute top-50 start-50 translate-middle z-3 w-100 text-center">
-                                <span class="badge bg-dark px-4 py-2 shadow-lg" style="opacity: 0.9; font-size: 1rem; border: 2px solid white;">SOLD</span>
+                                <span class="sold-badge">SOLD OUT</span>
                             </div>
                         <?php endif; ?>
 
-                        <div class="ratio ratio-16x9 bg-dark <?= ($row['status'] == 'Sold') ? 'opacity-50' : '' ?>">
+                        <div class="ratio ratio-16x9 bg-dark">
                             <?php if($row['video_file']): ?>
                                 <video class="w-100 h-100 object-fit-cover" muted onmouseover="this.play()" onmouseout="this.pause();this.currentTime=0;">
                                     <source src="assets/videos/<?= $row['video_file'] ?>" type="video/mp4">
@@ -115,7 +116,7 @@ $admin_email = "campusthrift77@gmail.com";
     </section>
 
     <!-- Specs Modal (Reusable from index.php) -->
-    <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="projectModal" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content border-0 overflow-hidden shadow-lg" style="border-radius: 40px;">
                 <div class="ratio ratio-16x9 bg-dark" id="modalVideoContainer"></div>
@@ -147,14 +148,28 @@ $admin_email = "campusthrift77@gmail.com";
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/security.js"></script>
     <script>
         $(document).ready(function() {
+            let isInquiring = false;
             $(".btn-quickview").on("click", function() {
                 const p = $(this).data("project");
+
+                // Track view
+                $.post('actions/track_view.php', {id: p.id});
+
                 $("#modalTitle").text(p.title); $("#modalDesc").text(p.desc); $("#modalPrice").text(p.price);
                 $("#modalDev").text(p.dev); $("#modalCategory").text(p.category);
                 $("#negNote").text(p.is_neg ? "Negotiable based on requirements." : "Fixed price.");
-                $("#modalInquire").attr("data-id", p.id).attr("data-title", p.title);
+                $("#modalInquire").attr("data-id", p.id).attr("data-title", p.title).attr("data-email", p.dev_email);
+
+                if (p.status === 'Sold') {
+                    $("#modalInquire").addClass("disabled btn-secondary").removeClass("btn-primary").text("Sold Out");
+                    $("#modalPrice").addClass("text-muted text-decoration-line-through").removeClass("text-primary");
+                } else {
+                    $("#modalInquire").removeClass("disabled btn-secondary").addClass("btn-primary").text("Inquire via Email");
+                    $("#modalPrice").removeClass("text-muted text-decoration-line-through").addClass("text-primary");
+                }
                 let vHtml = p.video ? `<video class="w-100 h-100" controls autoplay muted><source src="assets/videos/${p.video}" type="video/mp4"></video>` : (p.yt ? `<iframe src="https://www.youtube.com/embed/${p.yt}?autoplay=1" allowfullscreen></iframe>` : "");
                 $("#modalVideoContainer").html(vHtml);
                 let tHtml = ""; p.tech.split(',').forEach(t => { tHtml += `<span class="badge bg-light text-primary border px-3 py-2 small fw-bold">${t.trim()}</span>`; });
@@ -167,21 +182,88 @@ $admin_email = "campusthrift77@gmail.com";
                 const title = $(this).data('title');
                 const id = $(this).data('id');
                 Swal.fire({
-                    title: 'Inquire about ' + title,
-                    html: `<input id="swal-name" class="swal2-input" placeholder="Your Name"><input id="swal-email" class="swal2-input" placeholder="Your Email"><textarea id="swal-msg" class="swal2-textarea" placeholder="Your Message"></textarea>`,
-                    focusConfirm: false, showCancelButton: true, confirmButtonText: 'Send Inquiry', confirmButtonColor: '#6366f1',
-                    preConfirm: () => { return { name: document.getElementById('swal-name').value, email: document.getElementById('swal-email').value, message: document.getElementById('swal-msg').value } }
+                    title: '<h4 class="fw-bold mb-0">Inquire about ' + title + '</h4>',
+                    html: `
+                        <div class="text-start p-2">
+                            <input type="hidden" id="swal-hp" style="display:none !important">
+                            <div class="mb-3">
+                                <label class="small fw-bold mb-1 text-muted">Full Name</label>
+                                <input id="swal-name" class="form-control bg-light border-0 py-3 rounded-3 shadow-none" placeholder="Enter your name">
+                            </div>
+                            <div class="mb-3">
+                                <label class="small fw-bold mb-1 text-muted">Email Address</label>
+                                <input id="swal-email" type="email" class="form-control bg-light border-0 py-3 rounded-3 shadow-none" placeholder="your@email.com">
+                            </div>
+                            <div class="mb-1">
+                                <label class="small fw-bold mb-1 text-muted">Message</label>
+                                <textarea id="swal-msg" class="form-control bg-light border-0 py-3 rounded-3 shadow-none" rows="4" placeholder="How can we help you?"></textarea>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Send Inquiry',
+                    confirmButtonColor: '#6366f1',
+                    cancelButtonText: 'Cancel',
+                    cancelButtonColor: '#94a3b8',
+                    padding: '2rem',
+                    buttonsStyling: true,
+                    customClass: {
+                        popup: 'rounded-4 border-0 shadow-lg',
+                        confirmButton: 'btn btn-primary rounded-pill px-5 py-2 fw-bold',
+                        cancelButton: 'btn btn-light rounded-pill px-4 py-2 fw-bold'
+                    },
+                    didOpen: () => {
+                        document.getElementById('swal-name').focus();
+                    },
+                    preConfirm: () => { 
+                        const name = document.getElementById('swal-name').value;
+                        const email = document.getElementById('swal-email').value;
+                        const message = document.getElementById('swal-msg').value;
+                        const hp = document.getElementById('swal-hp').value;
+
+                        if (!name || !email || !message) {
+                            Swal.showValidationMessage('Please fill in all fields');
+                            return false;
+                        }
+                        return { name, email, message, hp_field: hp };
+                    },
+                    willClose: () => {
+                        $("#projectModal").modal("show");
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const data = result.value; data.subject = "Inquiry: " + title; data.project_id = id;
                         $.post('actions/save_inquiry.php', data, function(res) {
-                            Swal.fire('Sent!', 'Recorded.', 'success').then(() => { window.location.href = `mailto:<?= $admin_email ?>?subject=Inquiry: ${title}&body=${encodeURIComponent(data.message)}`; });
-                        });
+                            if (res.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sent!',
+                                    text: 'Recorded.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => { 
+                                    let targetEmail = $(this).data('email') || '<?= $admin_email ?>';
+                                    window.location.href = `mailto:${targetEmail}?subject=Inquiry: ${title}&body=${encodeURIComponent(data.message)}`; 
+                                });
+                            } else {
+                                Swal.fire('Error', res.message, 'error');
+                            }
+                        }.bind(this), 'json');
                     }
                 });
             });
 
-            $('#projectModal').on('hidden.bs.modal', function () { $("#modalVideoContainer").html(""); });
+            $('#modalInquire').on('click', function() {
+                isInquiring = true;
+                $("#projectModal").modal("hide");
+            });
+
+            $('#projectModal').on('hidden.bs.modal', function () { 
+                if (!isInquiring) {
+                    $("#modalVideoContainer").html(""); 
+                }
+                isInquiring = false; 
+            });
         });
     </script>
 </body>

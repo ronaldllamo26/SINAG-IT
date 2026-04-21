@@ -1,0 +1,6 @@
+# SINAG IT Marketplace Git Ignore
+scratch/
+.DS_Store
+Thumbs.db
+*.log
+config_local.php
